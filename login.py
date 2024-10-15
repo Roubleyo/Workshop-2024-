@@ -1,10 +1,13 @@
 import streamlit as st
 import app
+import datetime
+from app import save_user
 
 # --- PAGE DE CONNEXION ---
 def show_login():
     if 'inscription' not in st.session_state:
         st.session_state['inscription'] = False
+        st.session_state['mineur'] = False
 
     if st.session_state['inscription'] != True:
         st.title("Connexion")
@@ -30,15 +33,27 @@ def show_login():
         
     if st.session_state['inscription'] == True : 
         with placeholder.container() : 
-            age = st.text_input("Age")
+            birth = st.date_input("Age",min_value=datetime.date(1900,1,1),)
+            age = datetime.date.today().year-birth.year
+            if age < 13 :
+                st.text("L'age minimum pour créer un compte est de 13 ans.")
+            elif age >= 13 and age < 18:
+                tel = st.text_input("Numéro de téléphone du représentant légal")
+            else :
+                tel = st.text_input("Numéro de téléphone")
         with g : 
             if st.button("Inscription"):
+                age = datetime.date.today().year-birth.year
                 users = app.load_users()
                 if any(user['username'] == username for user in users):
                     st.error("Ce nom d'utilisateur existe déjà.")
+                elif age < 13:
+                    st.error("L'age minimum pour créer un compte est de 13 ans !")
                 else:
-                    app.save_user(username, password, age)
-                    st.success("Inscription réussie !")
+                    user= {"username": username, "password": password, "age": age, "tel": tel}
+                    save_user(user)
+                    st.session_state['inscription'] = False
+                    st.rerun()
         with d : 
             if st.button("Déjà un compte ?"):
                     st.session_state['inscription'] = False

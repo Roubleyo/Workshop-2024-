@@ -16,9 +16,10 @@ def load_users():
     except FileNotFoundError:
         return []
 
-def save_user(username, password, age):
+def save_user(user):
+    print(user)
     users = load_users()
-    users.append({"username": username, "password": hash_password(password), "age":age})
+    users.append({"username": user['username'], "password": hash_password(user['password']), "age": user["age"], "parentnum":user["tel"]})
     with open('users.json', 'w') as f:
         json.dump(users, f, indent=4)
 
