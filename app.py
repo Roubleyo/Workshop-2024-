@@ -2,7 +2,6 @@ import streamlit as st
 import json
 import hashlib
 import datetime
-import signup
 import login
 import feed
 
@@ -17,9 +16,9 @@ def load_users():
     except FileNotFoundError:
         return []
 
-def save_user(username, password):
+def save_user(username, password, age):
     users = load_users()
-    users.append({"username": username, "password": hash_password(password)})
+    users.append({"username": username, "password": hash_password(password), "age":age})
     with open('users.json', 'w') as f:
         json.dump(users, f, indent=4)
 
@@ -70,11 +69,9 @@ def save_reply(message_id, username, reply_message):
 # --- LOGIQUE DE NAVIGATION ---
 def main():
     st.sidebar.title("Navigation")
-    page = st.sidebar.selectbox("Choisissez une page", ["Connexion", "Inscription", "Feed"])
+    page = st.sidebar.selectbox("Choisissez une page", ["Connexion", "Feed"])
 
-    if page == "Inscription":
-        signup.show_signup()
-    elif page == "Connexion":
+    if page == "Connexion":
         login.show_login()
     elif page == "Feed":
         feed.show_feed()
