@@ -45,6 +45,7 @@ def save_message(username, message):
         "username": username,
         "message": message,
         "replies": [],
+        "type": 'message',
         "timestamp": str(datetime.datetime.now())
     }
     messages.append(new_message)
@@ -58,6 +59,7 @@ def save_reply(message_id, username, reply_message):
         "username": username,
         "message": reply_message,
         "replies": [],
+        "type": 'reply',
         "timestamp": str(datetime.datetime.now())
     }
     messages.append(reply)
