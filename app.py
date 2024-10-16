@@ -19,7 +19,7 @@ def load_users():
 def save_user(user):
     print(user)
     users = load_users()
-    users.append({"username": user['username'], "password": hash_password(user['password']), "age": user["age"], "parentnum":user["tel"]})
+    users.append({"username": user['username'], "password": hash_password(user['password']), "age": user["age"], "parentnum":user["tel"], "strike":0})
     with open('users.json', 'w') as f:
         json.dump(users, f, indent=4)
 
