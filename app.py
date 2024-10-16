@@ -82,11 +82,28 @@ def save_reply(message_id, username, reply_message, toxicity):
 # --- LOGIQUE DE NAVIGATION ---
 def main():
     st.sidebar.title("Navigation")
-    page = st.sidebar.selectbox("Choisissez une page", ["Connexion", "Feed"])
+    if 'lst' not in st.session_state:
+        st.session_state['lst'] = ["Connexion", "Feed"]
 
-    if page == "Connexion":
-        login.show_login()
-    elif page == "Feed":
+
+    page = st.sidebar.selectbox("Choisissez une page", st.session_state['lst'])
+
+    if 'page' not in st.session_state:
+        st.session_state['page'] = "Connexion"
+    else:
+        st.session_state['page'] = page 
+        
+    
+
+    admin = st.sidebar.checkbox("Mode admin")
+
+    if st.session_state['page'] == "Connexion":
+        test = login.show_login()
+        if test ==  True:
+            st.session_state['page'] = "Feed"
+            st.session_state['lst'] = ["Feed", "Connexion"]
+            st.rerun()
+    elif st.session_state['page'] == "Feed":
         feed.show_feed()
 
 

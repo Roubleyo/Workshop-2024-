@@ -24,8 +24,10 @@ def show_login():
                 if app.check_user(username, password):
                     st.success("Connexion réussie !")
                     st.session_state["username"] = username
+                    return True
                 else:
                     st.error("Nom d'utilisateur ou mot de passe incorrect")
+                    return False
         with d : 
             if st.button("Pas de compte ?"):
                 st.session_state['inscription'] = True
