@@ -5,9 +5,11 @@ import datetime
 import login
 import feed
 
+
 # --- FONCTIONS UTILISATEURS ---
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
 
 def load_users():
     try:
@@ -16,12 +18,14 @@ def load_users():
     except FileNotFoundError:
         return []
 
+
 def save_user(user):
     print(user)
     users = load_users()
     users.append({"username": user['username'], "password": hash_password(user['password']), "age": user["age"], "parentnum":user["tel"], "strike":0})
     with open('users.json', 'w') as f:
         json.dump(users, f, indent=4)
+
 
 def check_user(username, password):
     users = load_users()
@@ -30,6 +34,7 @@ def check_user(username, password):
             return True
     return False
 
+
 # --- FONCTIONS MESSAGES ---
 def load_messages():
     try:
@@ -37,6 +42,7 @@ def load_messages():
             return json.load(f)
     except FileNotFoundError:
         return []
+
 
 def save_message(username, message):
     messages = load_messages()
@@ -52,7 +58,8 @@ def save_message(username, message):
     with open('messages.json', 'w') as f:
         json.dump(messages, f, indent=4)
 
-def save_reply(message_id, username, reply_message):
+
+def save_reply(message_id, username, reply_message, toxicity):
     messages = load_messages()
     reply = {
         "id": len(messages) + 1,
@@ -60,6 +67,7 @@ def save_reply(message_id, username, reply_message):
         "message": reply_message,
         "replies": [],
         "type": 'reply',
+        "toxicity": toxicity,
         "timestamp": str(datetime.datetime.now())
     }
     messages.append(reply)
@@ -68,6 +76,7 @@ def save_reply(message_id, username, reply_message):
             message["replies"].append(reply["id"])
     with open('messages.json', 'w') as f:
         json.dump(messages, f, indent=4)
+
 
 # --- LOGIQUE DE NAVIGATION ---
 def main():
@@ -95,6 +104,7 @@ def main():
             st.rerun()
     elif st.session_state['page'] == "Feed":
         feed.show_feed()
+
 
 if __name__ == "__main__":
     main()
