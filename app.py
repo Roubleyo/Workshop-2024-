@@ -29,11 +29,15 @@ def save_user(user):
 
 def check_user(username, password):
     users = load_users()
+    error = "Nom d'utilisateur ou mot de passe incorrect"
     for user in users:
-        if user["username"] == username and user["password"] == hash_password(password):
+        if user["strike"] >= 5 :
+            error = "Cet utilisateur est banni"
+        elif user["username"] == username and user["password"] == hash_password(password):
             st.session_state['admin'] = user["admin"]
             st.session_state['user'] = user["username"]
             return True
+    st.error(error)
     return False
 
 
@@ -47,38 +51,46 @@ def load_messages():
 
 
 def save_message(username, message, toxicity):
-    messages = load_messages()
-    new_message = {
-        "id": len(messages) + 1,
-        "username": username,
-        "message": message,
-        "replies": [],
-        "type": 'message',
-        "toxicity": toxicity,
-        "timestamp": str(datetime.datetime.now())
-    }
-    messages.append(new_message)
-    with open('messages.json', 'w') as f:
-        json.dump(messages, f, indent=4)
+    users = load_users()
+    for user in users:
+        if user["username"] == username:
+            if user["strike"] < 3 :
+                messages = load_messages()
+                new_message = {
+                    "id": len(messages) + 1,
+                    "username": username,
+                    "message": message,
+                    "replies": [],
+                    "type": 'message',
+                    "toxicity": toxicity,
+                    "timestamp": str(datetime.datetime.now())
+                }
+                messages.append(new_message)
+                with open('messages.json', 'w') as f:
+                    json.dump(messages, f, indent=4)
 
 
 def save_reply(message_id, username, reply_message, toxicity):
-    messages = load_messages()
-    reply = {
-        "id": len(messages) + 1,
-        "username": username,
-        "message": reply_message,
-        "replies": [],
-        "type": 'reply',
-        "toxicity": toxicity,
-        "timestamp": str(datetime.datetime.now())
-    }
-    messages.append(reply)
-    for message in messages:
-        if message["id"] == message_id:
-            message["replies"].append(reply["id"])
-    with open('messages.json', 'w') as f:
-        json.dump(messages, f, indent=4)
+    users = load_users()
+    for user in users:
+        if user["username"] == username:
+            if user["strike"] < 3 :
+                messages = load_messages()
+                reply = {
+                    "id": len(messages) + 1,
+                    "username": username,
+                    "message": reply_message,
+                    "replies": [],
+                    "type": 'reply',
+                    "toxicity": toxicity,
+                    "timestamp": str(datetime.datetime.now())
+                }
+                messages.append(reply)
+                for message in messages:
+                    if message["id"] == message_id:
+                        message["replies"].append(reply["id"])
+                with open('messages.json', 'w') as f:
+                    json.dump(messages, f, indent=4)
 
 
 # --- LOGIQUE DE NAVIGATION ---
