@@ -4,6 +4,7 @@ import hashlib
 import datetime
 import login
 import feed
+import admin
 
 
 # --- FONCTIONS UTILISATEURS ---
@@ -20,9 +21,8 @@ def load_users():
 
 
 def save_user(user):
-    print(user)
     users = load_users()
-    users.append({"username": user['username'], "password": hash_password(user['password']), "age": user["age"], "parentnum":user["tel"], "strike":0})
+    users.append({"username": user['username'], "password": hash_password(user['password']), "age": user["age"], "parentnum":user["tel"], "strike":0, "admin": False})
     with open('users.json', 'w') as f:
         json.dump(users, f, indent=4)
 
@@ -82,7 +82,7 @@ def save_reply(message_id, username, reply_message, toxicity):
 def main():
     st.sidebar.title("Navigation")
     if 'lst' not in st.session_state:
-        st.session_state['lst'] = ["Connexion", "Feed"]
+        st.session_state['lst'] = ["Connexion", "Feed","Administration"]
 
 
     page = st.sidebar.selectbox("Choisissez une page", st.session_state['lst'])
@@ -90,20 +90,18 @@ def main():
     if 'page' not in st.session_state:
         st.session_state['page'] = "Connexion"
     else:
-        st.session_state['page'] = page 
-        
-    
-
-    admin = st.sidebar.checkbox("Mode admin")
+        st.session_state['page'] = page
 
     if st.session_state['page'] == "Connexion":
         test = login.show_login()
         if test ==  True:
             st.session_state['page'] = "Feed"
-            st.session_state['lst'] = ["Feed", "Connexion"]
+            st.session_state['lst'] = ["Feed", "Connexion","Administration"]
             st.rerun()
     elif st.session_state['page'] == "Feed":
         feed.show_feed()
+    elif st.session_state['page'] == "Administration":
+        admin.show_admin()
 
 
 if __name__ == "__main__":
