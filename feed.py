@@ -18,10 +18,10 @@ def show_feed():
     # if st.button("Publier"):
     if new_message:
         toxicity = check_text(new_message)
-        if toxicity['toxicity'] > 0.80:
-            st.error("Le message est inapproprié, vous ne pouvez pas dire cela sur notre réseau")
+        if toxicity['toxicity'][0] > 0.80:
+            dialogue_toxicity(new_message, toxicity)
         else:
-            app.save_message(st.session_state["username"], new_message)
+            app.save_message(st.session_state["username"], new_message, toxicity["toxicity"][0])
             st.rerun()
         # st.success("Message publié !")
     # else:
@@ -53,7 +53,7 @@ def show_feed():
                     if reply_message:
                         toxicity = check_text(reply_message)
                         if toxicity['toxicity'][0] > 0.80:
-                            st.error("Le message est inapproprié, vous ne pouvez pas dire cela sur notre réseau")
+                            dialogue_toxicity(message, toxicity, reply_message=reply_message)
                         else:
                             app.save_reply(message["id"], st.session_state["username"], reply_message,
                                            toxicity['toxicity'][0])
@@ -61,3 +61,16 @@ def show_feed():
                             st.rerun()
                     else:
                         st.error("La réponse ne peut pas être vide.")
+
+@st.dialog("Ce message semble être négatif. Voulez-vous vraiment le publier ?")
+def dialogue_toxicity(message, toxicity, reply_message=False):
+    if st.button("Oui"):
+        if reply_message:
+            app.save_reply(message["id"], st.session_state["username"], reply_message,
+                           toxicity['toxicity'][0])
+        else:
+            app.save_message(st.session_state["username"], message, toxicity)
+        st.rerun()
+    if st.button("Non"):
+        st.info("message non publié")
+        st.rerun()

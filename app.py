@@ -44,7 +44,7 @@ def load_messages():
         return []
 
 
-def save_message(username, message):
+def save_message(username, message, toxicity):
     messages = load_messages()
     new_message = {
         "id": len(messages) + 1,
@@ -52,6 +52,7 @@ def save_message(username, message):
         "message": message,
         "replies": [],
         "type": 'message',
+        "toxicity": toxicity,
         "timestamp": str(datetime.datetime.now())
     }
     messages.append(new_message)
