@@ -1,0 +1,26 @@
+[
+    {
+        "username": "test",
+        "password": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+        "age": 22,
+        "parentnum": "06471159397",
+        "strike": 3,
+        "admin": true
+    },
+    {
+        "username": "asi",
+        "password": "ea7ea1e7bd82684fe8e5be43ca12bbe5e47ec31dc2c0de0f5b4395f5deb44113",
+        "age": 19,
+        "parentnum": "06525369528",
+        "strike": 0,
+        "admin": false
+    },
+    {
+        "username": "laaaa",
+        "password": "ea7ea1e7bd82684fe8e5be43ca12bbe5e47ec31dc2c0de0f5b4395f5deb44113",
+        "age": 19,
+        "parentnum": "06525369528",
+        "strike": 1,
+        "admin": false
+    }
+]

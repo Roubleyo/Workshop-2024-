@@ -1,5 +1,7 @@
 import streamlit as st
 import app
+import pandas as pd
+import json
 from bert_toxicity import check_text
 
 
@@ -13,51 +15,103 @@ def show_admin():
 
     # Publier un message
     # st.subheader("Publier un nouveau message")
-    new_message = st.chat_input("Publier un nouveau message!")
+    user_json = app.load_users()
+    users = pd.DataFrame(user_json)
+    users['select'] = [False] * len(users)
 
-    # if st.button("Publier"):
-    if new_message:
-        toxicity = check_text(new_message)
-        if toxicity['toxicity'] > 0.80:
-            st.error("Le message est inapproprié, vous ne pouvez pas dire cela sur notre réseau")
-        else:
-            app.save_message(st.session_state["username"], new_message)
-            st.rerun()
-        # st.success("Message publié !")
-    # else:
-    # st.error("Le message ne peut pas être vide.")
+    users = users.sort_values(by='strike', ascending=False)
 
-    # Affichage du feed
-    st.subheader("Feed des messages")
-    messages = app.load_messages()
-    i = 0
-    for message in messages:
-        i += 1
-        if message['type'] == 'message':
-            # st.write(f"{message['username']}: {message['message']} ({message['timestamp']})")
-            msg_box = st.chat_message(message['username'])  # ,message['message'])
-            msg_box.write(f"""**{message['timestamp'][:19]}** """)
-            with st.expander(f"""**{message['username']}** :  {message['message']}"""):
-                if message["replies"]:
-                    for reply_id in message["replies"]:
-                        reply = next((m for m in messages if m["id"] == reply_id), None)
-                        if reply:
-                            st.write(f"({reply['timestamp'][:19]}) **↳** {reply['username']}: {reply['message']} ")
-                # else :
-                # msg_box.write(message['message'])
+    a = st.data_editor(users,
+                   column_order=['select','username','strike','age','admin'],
+                   column_config= {
+                            "username" : "Username",
+                            "password" :  "Password",
+                            "age"      : "Age",
+                            "parentnum": "Contact",
+                            "strike"   : "Strikes",
+                            "admin"    : "Admin ?",
+                            "select" : "Select ? "
+                                   },
+                                   use_container_width= True,
+                                   hide_index= True)
+    
 
-                # Répondre à un message
-                # with st.expander(f"Répondre à {message['username']}"):
-                reply_message = st.text_area(f"Réponse au message", key=i)
-                if st.button(f"Publier la réponse {message['id']}"):
-                    if reply_message:
-                        toxicity = check_text(reply_message)
-                        if toxicity['toxicity'][0] > 0.80:
-                            st.error("Le message est inapproprié, vous ne pouvez pas dire cela sur notre réseau")
-                        else:
-                            app.save_reply(message["id"], st.session_state["username"], reply_message,
-                                           toxicity['toxicity'][0])
-                            st.success("Réponse publiée !")
-                            st.rerun()
-                    else:
-                        st.error("La réponse ne peut pas être vide.")
+    b = a[a['select'] == True] 
+
+    #st.write(b)
+    #st.write('IIII')
+
+    msg_json = app.load_messages()
+    msgs = pd.DataFrame(msg_json)
+    for index, row in b.iterrows():
+        #st.write(f"Row {index}:")
+        st.info(f"""Username: {row['username']},
+                 Age: {row['age']},
+                 Admin: {row['admin']}""")
+
+
+
+        a = st.dataframe(
+                     msgs[msgs['username'] == row['username']],
+                     column_order=['message','replies','toxicity','timestamp'],
+                     use_container_width=True,
+                     hide_index = True,
+                     on_select="rerun",
+                     selection_mode="single-row")
+        
+
+        
+
+        erase = st.button('Erase')
+        msg_chosi = msgs.iloc[a.selection.rows]
+        #st.dataframe(msg_chosi,use_container_width=True,)
+        if not msg_chosi.empty and erase : 
+            id = msg_chosi.iloc[0]['id']
+            username = msg_chosi.iloc[0]['username']
+
+
+
+            msg_json = app.load_messages()
+     
+            filtered_data = [msg for msg in msg_json if msg['id'] != id]
+
+
+            for msg in filtered_data:
+                msg['replies'] = [reply_id for reply_id in msg['replies'] if reply_id != id]
+
+            #st.write(filtered_data)
+
+            with open('messages.json', 'w') as f:
+                json.dump(filtered_data, f, indent=4)
+
+            
+            for user in user_json:
+                if user["username"] == username :
+                    user["strike"] += 1
+
+            with open('users.json', 'w') as f:
+                json.dump(user_json, f, indent=4)
+
+            #st.write(user_json)
+
+
+            st.success('Message bien supprimé !')
+
+
+          
+
+
+
+
+
+        
+
+
+#efface msgs  + ajoute strike 
+
+
+    
+    
+
+
+

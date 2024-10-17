@@ -14,8 +14,8 @@ def show_login():
     else:
         st.title("Inscription")
 
-    username = st.text_input("Nom d'utilisateur")
-    password = st.text_input("Mot de passe", type="password")
+    username = st.text_input("Nom d'utilisateur",'test')
+    password = st.text_input("Mot de passe",'test', type="password")
     placeholder = st.empty()
     g,d = st.columns([3.75,1])
     if st.session_state['inscription'] != True :
