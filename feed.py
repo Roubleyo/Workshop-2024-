@@ -1,5 +1,6 @@
 import streamlit as st
 import app
+import json
 from bert_toxicity import check_text
 
 
@@ -65,6 +66,12 @@ def show_feed():
 @st.dialog("Ce message semble être négatif. Voulez-vous vraiment le publier ?")
 def dialogue_toxicity(message, toxicity, reply_message=False):
     if st.button("Oui"):
+        users = app.load_users()
+        for user in users:
+            if user["username"] == st.session_state['user'] :
+                user["strike"] += 1
+                with open('users.json', 'w') as f:
+                    json.dump(users, f, indent=4)
         if reply_message:
             app.save_reply(message["id"], st.session_state["username"], reply_message,
                            toxicity['toxicity'][0])

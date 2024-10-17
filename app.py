@@ -32,6 +32,7 @@ def check_user(username, password):
     for user in users:
         if user["username"] == username and user["password"] == hash_password(password):
             st.session_state['admin'] = user["admin"]
+            st.session_state['user'] = user["username"]
             return True
     return False
 
@@ -82,6 +83,8 @@ def save_reply(message_id, username, reply_message, toxicity):
 
 # --- LOGIQUE DE NAVIGATION ---
 def main():
+    if 'user' not in st.session_state:
+        st.session_state['user'] = ""
     st.sidebar.title("Navigation")
     if 'lst' not in st.session_state:
         st.session_state['lst'] = ["Connexion", "Feed","Administration"]
