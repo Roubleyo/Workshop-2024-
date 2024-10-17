@@ -31,6 +31,7 @@ def check_user(username, password):
     users = load_users()
     for user in users:
         if user["username"] == username and user["password"] == hash_password(password):
+            st.session_state['admin'] = user["admin"]
             return True
     return False
 
@@ -102,6 +103,8 @@ def main():
     elif st.session_state['page'] == "Feed":
         feed.show_feed()
     elif st.session_state['page'] == "Administration":
+        if 'admin' not in st.session_state:
+            st.session_state['admin'] = False
         admin.show_admin()
 
 

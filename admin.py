@@ -5,11 +5,11 @@ from bert_toxicity import check_text
 
 # --- PAGE FEED ---
 def show_admin():
-    if "admin" not in st.session_state:
+    if st.session_state['admin'] == False:
         st.error("Veuillez vous connecter en tant qu'admin.")
         return
 
-    st.title(f"Bienvenue, {st.session_state['username']}!")
+    st.title(f"Bienvenue dans le mode administration, {st.session_state['username']}!")
 
     # Publier un message
     # st.subheader("Publier un nouveau message")
