@@ -26,7 +26,6 @@ def show_login():
                     st.session_state["username"] = username
                     return True
                 else:
-                    st.error("Nom d'utilisateur ou mot de passe incorrect")
                     return False
         with d : 
             if st.button("Pas de compte ?"):
